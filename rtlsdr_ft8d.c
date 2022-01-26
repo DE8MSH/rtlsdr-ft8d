@@ -68,8 +68,8 @@ struct decoder_results  dec_results[50];
 
 
 /* Could be nice to update this one with the CI */
-const char rtlsdr_ft8d_version[] = "0.3.6";
-const char pskreporter_app_version[]  = "rtlsdr-ft8d_v0.3.6";
+const char rtlsdr_ft8d_version[] = "0.3.7";
+const char pskreporter_app_version[]  = "rtlsdr-ft8d_v0.3.7";
 
 
 /* Callback for each buffer received */
@@ -363,7 +363,8 @@ inline uint32_t SwapEndian32(uint32_t val) {
  *   https://pskreporter.info/pskmap.html
  */
 void postSpots(uint32_t n_results) {
-    return;  // No feedback from the community, no idea if it works, DISABLED for now
+    // I enabled PSK reporting again. It seems to work
+    //return;  // No feedback from the community, no idea if it works, DISABLED for now
 
     if (rx_options.noreport) {
         LOG(LOG_DEBUG, "Decoder thread -- Skipping the reporting\n");
@@ -660,6 +661,8 @@ void printSpots(uint32_t n_results) {
                dec_results[i].call,
                dec_results[i].loc);
     }
+    // Sedn MSG to DAPNET if FT8 was decoded...
+    system("curl -H \"Content-Type: application/json\" -X POST -u OPNAME:DAPNETPW -d '{ \"text\": \"VHF FT8 Alarm!\", \"callSignNames\": [\"opname\"], \"transmitterGroupNames\": [\"dl-all\"], \"emergency\": false }' www.hampager.de:8080/calls");
 }
 
 
